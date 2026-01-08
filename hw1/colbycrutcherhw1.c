@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void extractOneLine(char *line){
+// void extractOneLine(char *line){
     
-}
+// }
 
 int main() {
     FILE *file;
@@ -17,7 +17,7 @@ int main() {
     
     while (fscanf(file, "%s", word) == 1) {
         printf("%s\n", word); 
-        checkIfWordinList(word);
+        // checkIfWordinList(word);
 
     }
     
