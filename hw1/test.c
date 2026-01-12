@@ -4,20 +4,12 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-/*
-  Follows the provided pseudocode very closely:
-  - extractOneLine(char *aline) scans i from 0 while aline[i] != '\n' && aline[i] != '\0'
-  - uses inWord, start, wordLen
-  - when delimiter found after being inWord, copies substring to newWord
-  - discards single-letter words except a/i
-  - inserts/updates in a linked list
-*/
 
 typedef struct WordItem {
     char *word;              // stored in lowercase for easy case-insensitive handling
     int count;
     struct WordItem *next;
-} WordItem;
+} WordItem; 
 
 /* ---------- Linked List Helpers ---------- */
 
