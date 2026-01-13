@@ -3,13 +3,9 @@
 #include <string.h>
 #include "functions.h"
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s <input_file>\n", argv[0]);
-        return 1;
-    }
+int main() {
 
-    const char *inputFile = argv[1];
+    const char *inputFile = "testfile2";   // Always use testfile2
 
     // read whole file first
     FILE *fp = fopen(inputFile, "rb");
@@ -38,7 +34,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    //processing: tokenize + count + sort 
+    // processing: tokenize + count + sort 
     const int MAX_WORDS = 200000;
 
     Word *words = (Word *)malloc(sizeof(Word) * MAX_WORDS);
@@ -69,12 +65,12 @@ int main(int argc, char *argv[]) {
     qsort(alpha, wordCount, sizeof(Word), cmpAlpha);
     qsort(occur, wordCount, sizeof(Word), cmpCountDesc);
 
-    writeTable("sortedAlphabetical.txt", alpha, wordCount);
-    writeTable("sortedFreq.txt", occur, wordCount);
+    writeTable("sortedWord.txt", alpha, wordCount);
+    writeTable("sortedOccur.txt", occur, wordCount);
 
     printf("Done.\n");
     printf("Distinct words: %d\n", wordCount);
-    printf("Wrote: sortedAlphabetical.txt and sortedFreq.txt\n");
+    printf("Wrote: sortedWord.txt and sortedOccur.txt\n");
 
     free(alpha);
     free(occur);
