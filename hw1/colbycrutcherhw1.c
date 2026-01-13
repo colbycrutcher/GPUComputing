@@ -1,21 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-
-
-
-
-void singleLetter(char *word){
-    if (strlen(word) == 1) {
-            if(word[0] == 'a' || word[0] == 'i'){
-                printf("Keep word: %s\n", word);
-        } else {
-            printf("Discard word: %s\n", word);
-        }
-    }
-    
-}
+#include "functions.c"
 
 int main() {
     FILE *file;
@@ -28,11 +14,13 @@ int main() {
     }
     
     while (fscanf(file, "%s", word) == 1) {
-        printf("%s\n", word); 
+       // printf("%s\n", word);
         // checkIfWordinList(word);
         singleLetter(word);
         
     }
+
+    printList();
     
 
 
