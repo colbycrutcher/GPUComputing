@@ -27,10 +27,56 @@ __global__ void kernel3(int *a)
 }
 
 
-int main(){
-    kernel1<<<2,5>>>();
-    kernel2<<<2,5>>>();
-    kernel3<<<2,5>>>();
+int main(int argc, char* argv[]){
 
+    //Size of vectors
+    int n = 10000;
+
+    //Host input vectors
+    int *h_a;
+
+    //Device input vectors
+    int *d_a;
+
+    //Size, in bytes, of each vector
+    size_t bytes = n*sizeof(int);
+
+    //Allocate memory for each vector on host
+    h_a = (int*)malloc(bytes);
+
+    //Allocate memory for each vector on GPU
+    cudaMalloc(&d_a, bytes);
+
+    int i;
+    //Initialize vectors on host
+    for( i = 0; i < n; i++ ) {
+        h_a[i] = 0;
+    }
+    //Copy host vectors to device
+    cudaMemcpy( d_a, h_a, bytes, cudaMemcpyHostToDevice);
+
+    //Define blocksize and gridsize
+    int blocksize = 1024;
+    int gridsize = (int)ceil((float)n/blocksize);
+
+
+    //Launch the kernels
+    kernel1<<<blocksize, gridsize>>>(d_a);
+    kernel2<<<blocksize, gridsize>>>(d_a);
+    kernel3<<<blocksize, gridsize>>>(d_a);
+
+    //Copy device result vector to host copy
+    cudaMemcpy( h_a, d_a, bytes, cudaMemcpyDeviceToHost);
+
+    //print the results
+    for(i=0; i<10; i++){
+        printf("%d ",h_a[i]);
+    }
+    printf("\n");
+    //free GPU memory
+    cudaFree(d_a);  
+    //free CPU memory
+    free(h_a);
+    return 0;
 
 }
