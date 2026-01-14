@@ -1,5 +1,6 @@
 include <stdio.h>
 
+
 //kernel1
 __global__ void kernel1(int *a)
 {
@@ -30,4 +31,6 @@ int main(){
     kernel1<<<2,5>>>();
     kernel2<<<2,5>>>();
     kernel3<<<2,5>>>();
+
+
 }
