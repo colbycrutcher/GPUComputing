@@ -24,3 +24,10 @@ __global__ void kernel3(int *a)
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     a[idx] = threadIdx.x;
 }
+
+
+int main(){
+    kernel1<<<2,5>>>();
+    kernel2<<<2,5>>>();
+    kernel3<<<2,5>>>();
+}
