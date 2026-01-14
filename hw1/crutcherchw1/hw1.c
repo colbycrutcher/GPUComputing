@@ -5,7 +5,7 @@
 
 int main() {
 
-    const char *inputFile = "testfile2";   // Always use testfile2
+    const char *inputFile = "testfile2";   
 
     // read whole file first
     FILE *fp = fopen(inputFile, "rb");
@@ -47,7 +47,7 @@ int main() {
     int wordCount = 0;
     processBuffer(buffer, size, words, &wordCount, MAX_WORDS);
 
-    // Make copies so we can sort two different ways 
+    // Make copies so we can sort by alpahabet and by occurrence.
     Word *alpha = (Word *)malloc(sizeof(Word) * wordCount);
     Word *occur = (Word *)malloc(sizeof(Word) * wordCount);
     if (!alpha || !occur) {
