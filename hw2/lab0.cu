@@ -1,4 +1,7 @@
-include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <cuda.h>
+#include <math.h>
 
 
 //kernel1
