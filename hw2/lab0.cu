@@ -33,7 +33,7 @@ __global__ void kernel3(int *a)
 int main(int argc, char* argv[]){
 
     //Size of vectors
-    int n = 10000;
+    int n = 4;
 
     //Host input vectors
     int *h_a;
@@ -55,40 +55,42 @@ int main(int argc, char* argv[]){
     for( i = 0; i < n; i++ ) {
         h_a[i] = 0;
     }
+
     //Copy host vectors to device
     cudaMemcpy( d_a, h_a, bytes, cudaMemcpyHostToDevice);
 
     //Define blocksize and gridsize
-    int blocksize = 1024;
+    int blocksize = 4;
     int gridsize = (int)ceil((float)n/blocksize);
 
 
     //Launch the kernels
-    kernel1<<<blocksize, gridsize>>>(d_a);
+    kernel1<<<gridsize, blocksize>>>(d_a);
 
     // Print results after kernel1
     cudaMemcpy( h_a, d_a, bytes, cudaMemcpyDeviceToHost);
     printf("After kernel1:\n");
-    for(i=0; i<10; i++){
+    for(i=0; i< n; i++){
         printf("%d ",h_a[i]);
     }
     printf("\n");
-    kernel2<<<blocksize, gridsize>>>(d_a);
+    // Launch kernel2
+    kernel2<<<gridsize, blocksize>>>(d_a);
 
     // Print results after kernel2
     cudaMemcpy( h_a, d_a, bytes, cudaMemcpyDeviceToHost);
     printf("After kernel2:\n");
-    for(i=0; i<10; i++){
+    for(i=0; i< n; i++){
         printf("%d ",h_a[i]);
     }
     printf("\n");
 
-    kernel3<<<blocksize, gridsize>>>(d_a);
+    kernel3<<<gridsize, blocksize>>>(d_a);
 
     // Print results after kernel3
     cudaMemcpy( h_a, d_a, bytes, cudaMemcpyDeviceToHost);
     printf("After kernel3:\n");
-    for(i=0; i<10; i++){
+    for(i=0; i< n; i++){
         printf("%d ",h_a[i]);
     }
     printf("\n");
