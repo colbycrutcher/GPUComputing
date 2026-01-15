@@ -65,6 +65,7 @@ int main(int argc, char* argv[]){
 
     //Launch the kernels
     kernel1<<<blocksize, gridsize>>>(d_a);
+
     // Print results after kernel1
     cudaMemcpy( h_a, d_a, bytes, cudaMemcpyDeviceToHost);
     printf("After kernel1:\n");
@@ -72,10 +73,11 @@ int main(int argc, char* argv[]){
         printf("%d ",h_a[i]);
     }
     printf("\n");
-    kernel2<<<blocksize, gridsize>>>(d_a);\
-// Print results after kernel1
+    kernel2<<<blocksize, gridsize>>>(d_a);
+
+    // Print results after kernel2
     cudaMemcpy( h_a, d_a, bytes, cudaMemcpyDeviceToHost);
-    printf("After kernel1:\n");
+    printf("After kernel2:\n");
     for(i=0; i<10; i++){
         printf("%d ",h_a[i]);
     }
@@ -83,14 +85,14 @@ int main(int argc, char* argv[]){
 
     kernel3<<<blocksize, gridsize>>>(d_a);
 
-    // Print results after kernel1
+    // Print results after kernel3
     cudaMemcpy( h_a, d_a, bytes, cudaMemcpyDeviceToHost);
-    printf("After kernel1:\n");
+    printf("After kernel3:\n");
     for(i=0; i<10; i++){
         printf("%d ",h_a[i]);
     }
     printf("\n");
-    
+
     //free GPU memory
     cudaFree(d_a);  
     //free CPU memory
