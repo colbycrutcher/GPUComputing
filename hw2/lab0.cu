@@ -33,7 +33,7 @@ __global__ void kernel3(int *a)
 int main(int argc, char* argv[]){
 
     //Size of vectors
-    int n = 4;
+    int n = 16;
 
     //Host input vectors
     int *h_a;
@@ -60,7 +60,9 @@ int main(int argc, char* argv[]){
     cudaMemcpy( d_a, h_a, bytes, cudaMemcpyHostToDevice);
 
     //Define blocksize and gridsize
+    // Number of threads in each block
     int blocksize = 4;
+    // Number of blocks in grid
     int gridsize = (int)ceil((float)n/blocksize);
 
 
