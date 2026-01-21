@@ -25,6 +25,12 @@ int main(int argc, char* argv[]){
     int N = atoi(argv[1]);
     int BLOCK_SIZE = atoi(argv[2]);
 
+    //Check for valid N and BLOCK_SIZE
+    if (N <= 0 || BLOCK_SIZE <= 0) {
+        std::cerr << "N and BLOCK_SIZE must be positive integers." << std::endl;
+        return 1;
+    }
+
     int GRID_SIZE = (int) ceil((N + 1)/ 2.0 / BLOCK_SIZE);
 
     return 0;
