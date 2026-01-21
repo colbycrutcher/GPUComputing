@@ -23,19 +23,18 @@ __host__ __device__ int isPrime(bignum n){
     for (;i <= lim; i++){
         if (n % i == 0) return 0;
     }   
-    
+
     return 1;
 }
 
 int main(int argc, char* argv[]){
     //Command line arguments for N and block size
-    if (argc != 3) {
+    if (argc < 2) {
         std::cerr << "Usage: " << argv[0] << " <N> <BLOCK_SIZE>" << std::endl;
-        return 1;
-    
+        exit(-1);
     }
 
-    int N = atoi(argv[1]);
+    bignum n = atoi(argv[1]);
     int BLOCK_SIZE = atoi(argv[2]);
 
     //Check for valid N and BLOCK_SIZE
