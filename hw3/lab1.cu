@@ -5,12 +5,26 @@
 #include <stdlib.h>
 
 
-
+typedef long long int bignum;
+/*
 __global__ void addKernel(int *a, int *b, int *c, int n){
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < n) {
         c[idx] = a[idx] + b[idx];
     }
+}
+*/
+__host__ __device__ int isPrime(bignum n){
+    if (n <= 1) return 0;
+    if (n % 2 == 0 && n > 2) return 0;
+
+    bignum i = 2, lim(bignum) sqrt((float)n) + 1;
+
+    for (;i <= lim; i++){
+        if (n % i == 0) return 0;
+    }   
+    
+    return 1;
 }
 
 int main(int argc, char* argv[]){
@@ -20,7 +34,6 @@ int main(int argc, char* argv[]){
         return 1;
     
     }
-    typedef long long int bignum;
 
     int N = atoi(argv[1]);
     int BLOCK_SIZE = atoi(argv[2]);
