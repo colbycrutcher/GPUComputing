@@ -97,9 +97,6 @@ int main(int argc, char* argv[]) {
     // Cleanup device now that we have results
     cudaFree(d_results);
 
-    /* -------------------------
- * SERIAL (CPU) TIMING
- * ------------------------- */
 memset(h_serial, 0, arrSize);
 
 double sStart = currentTime();
@@ -143,8 +140,8 @@ printf("Total number of primes by CPU in that range is: %llu.\n",
     const double NumProcessorCores = 4.0;
     const double efficiency = speedup / NumProcessorCores;
 
-     printf("%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %.6f\n", speedup);
-     printf("%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %.6f\n", efficiency);
+     printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %.6f\n", speedup);
+     printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %.6f\n", efficiency);
 
      free(h_results);
      free(h_serial);
