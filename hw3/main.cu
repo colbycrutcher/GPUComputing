@@ -1,149 +1,138 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <cuda_runtime.h>
-#include "timing.h"
+    //Colby Crutcher, Riley Rudolfo, Ben Foster
+
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <math.h>
+    #include <string.h>
+    #include <cuda_runtime.h>
+    #include "timing.h"
 
 
-typedef unsigned long long bignum;
+    typedef unsigned long long bignum;
 
-static void cudaCheck(cudaError_t err, const char* msg) {
-    if (err != cudaSuccess) {
-         fprintf(stderr, "CUDA error (%s): %s\n", msg, cudaGetErrorString(err));
-         exit(1);
+
+    //CUDA error checking
+    static void cudaCheck(cudaError_t err, const char* msg) {
+        if (err != cudaSuccess) {
+            fprintf(stderr, "CUDA error (%s): %s\n", msg, cudaGetErrorString(err));
+            exit(1);
+        }
     }
-}
 
-__host__ __device__ int isPrime(bignum x)
-{
-    if (x == 1) return 0;
-    if (x % 2 == 0 && x > 2) return 0;
-    bignum i = 2, lim = (bignum) sqrt((float) x) + 1;
-    for(; i < lim; i++){
-        if (x % i == 0) return 0;
-    }
-    return 1;
-}
-
-__global__ void primeKernel(bignum N, int* d_results) {
-    unsigned int id = blockIdx.x * blockDim.x + threadIdx.x;
-
-    // Handle 2 separately
-    if (id == 0 && N >= 2) d_results[2] = 1;
-
-    // Thread id -> odd number: 1,3,5,7,...
-    bignum num = (bignum)(2ULL * (bignum)id + 1ULL);
-
-    if (num <= N) {
-        d_results[num] = isPrime(num);
-    }
-}
-
-int main(int argc, char* argv[]) {
-    if (argc < 3) {
-         fprintf(stderr, "Usage: %s <N> <BLOCK_SIZE>\n", argv[0]);
+    __host__ __device__ int isPrime(bignum x)
+    {
+        if (x == 1) return 0;
+        if (x % 2 == 0 && x > 2) return 0;
+        bignum i = 2, lim = (bignum) sqrt((float) x) + 1;
+        for(; i < lim; i++){
+            if (x % i == 0) return 0;
+        }
         return 1;
     }
 
-    bignum N = (bignum)  strtoull(argv[1], nullptr, 10);
-    int BLOCK_SIZE =  atoi(argv[2]);
+    __global__ void primeKernel(bignum N, int* d_results) {
+        unsigned int id = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if (N == 0 || BLOCK_SIZE <= 0) {
-         fprintf(stderr, "N and BLOCK_SIZE must be positive integers.\n");
-         fprintf(stderr, "N: %llu, BLOCK_SIZE: %d\n",
-                     (unsigned long long)N, BLOCK_SIZE);
-        return 1;
+        // Handle 2 separately
+        if (id == 0 && N >= 2) d_results[2] = 1;
+
+        // Thread id -> odd number: 1,3,5,7,...
+        bignum num = (bignum)(2ULL * (bignum)id + 1ULL);
+
+        if (num <= N) {
+            d_results[num] = isPrime(num);
+        }
     }
 
-    int GRID_SIZE = (int)  ceil(((double)(N + 1ULL)) / 2.0 / (double)BLOCK_SIZE);
+    int main(int argc, char* argv[]) {
+        if (argc < 3) {
+            fprintf(stderr, "Usage: %s <N> <BLOCK_SIZE>\n", argv[0]);
+            return 1;
+        }
 
-    size_t arrSize = (size_t)(N + 1ULL) * sizeof(int);
+        bignum N = (bignum)  strtoull(argv[1], NULL, 10);
+        int BLOCK_SIZE =  atoi(argv[2]);
 
-    int* h_results = (int*)  malloc(arrSize);
-    int* h_serial  = (int*)  malloc(arrSize);
-    if (!h_results || !h_serial) {
-         fprintf(stderr, "Failed to allocate host arrays.\n");
-        return 1;
-    }
+        if (N == 0 || BLOCK_SIZE <= 0) {
+            fprintf(stderr, "N and BLOCK_SIZE must be positive integers.\n");
+            fprintf(stderr, "N: %llu, BLOCK_SIZE: %d\n",
+                        (unsigned long long)N, BLOCK_SIZE);
+            return 1;
+        }
 
-     printf("Find all prime numbers in the range of 0 to %llu...\n",
-                (unsigned long long)N);
+        int GRID_SIZE = (int)  ceil(((double)(N + 1ULL)) / 2.0 / (double)BLOCK_SIZE);
 
-    double pStart = currentTime();
+        size_t arrSize = (size_t)(N + 1ULL) * sizeof(int);
 
-    int* d_results = nullptr;
-    cudaCheck(cudaMalloc((void**)&d_results, arrSize), "cudaMalloc(d_results)");
-    cudaCheck(cudaMemset(d_results, 0, arrSize), "cudaMemset(d_results)");
+        int* h_results = (int*)  malloc(arrSize);
+        int* h_serial  = (int*)  malloc(arrSize);
+        if (!h_results || !h_serial) {
+            fprintf(stderr, "Failed to allocate host arrays.\n");
+            return 1;
+        }
 
-    primeKernel<<<GRID_SIZE, BLOCK_SIZE>>>(N, d_results);
-    cudaCheck(cudaGetLastError(), "kernel launch");
-    cudaCheck(cudaDeviceSynchronize(), "cudaDeviceSynchronize");
+        printf("Find all prime numbers in the range of 0 to %llu:\n",
+                    (unsigned long long)N);
 
-    cudaCheck(cudaMemcpy(h_results, d_results, arrSize, cudaMemcpyDeviceToHost),
-              "cudaMemcpy(d_results -> h_results)");
+        double pStart = currentTime();
 
-    double pEnd = currentTime();
-    double parallelTime = pEnd - pStart;
+        int* d_results = NULL;
+        cudaCheck(cudaMalloc((void**)&d_results, arrSize), "cudaMalloc(d_results)");
+        cudaCheck(cudaMemset(d_results, 0, arrSize), "cudaMemset(d_results)");
 
-    // Count primes on CPU AFTER timing (exclude summation cost)
-    unsigned long long gpuPrimeCount = 0;
-    for (bignum i = 0; i <= N; i++) gpuPrimeCount += (unsigned long long)h_results[i];
+        primeKernel<<<GRID_SIZE, BLOCK_SIZE>>>(N, d_results);
+        cudaCheck(cudaGetLastError(), "kernel launch");
+        cudaCheck(cudaDeviceSynchronize(), "cudaDeviceSynchronize");
 
-     printf("Parallel code executiontime in seconds is %.6f\n", parallelTime);
-     printf("Total number of primes found on the GPU in that range is: %llu.\n",
-                gpuPrimeCount);
+        cudaCheck(cudaMemcpy(h_results, d_results, arrSize, cudaMemcpyDeviceToHost),
+                "cudaMemcpy(d_results -> h_results)");
 
-    // Cleanup device now that we have results
-    cudaFree(d_results);
+        double pEnd = currentTime();
+        double parallelTime = pEnd - pStart;
 
-memset(h_serial, 0, arrSize);
+        // Count primes on CPU AFTER timing (exclude summation cost)
+        unsigned long long gpuPrimeCount = 0;
+        for (bignum i = 0; i <= N; i++) gpuPrimeCount += (unsigned long long)h_results[i];
 
-double sStart = currentTime();
+        printf("Parallel code executiontime in seconds is %.6f\n", parallelTime);
+        printf("Total number of primes found on the GPU in that range is: %llu.\n",
+                    gpuPrimeCount);
 
-/* Mark primes on CPU */
-if (N >= 2) h_serial[2] = 1;
-for (bignum x = 1; x <= N; x += 2) {
-    h_serial[x] = isPrime(x);
-}
+        // Cleanup device now that we have results
+        cudaFree(d_results);
 
-double sEnd = currentTime();
-double serialTime = sEnd - sStart;
+    memset(h_serial, 0, arrSize);
 
-/* Count AFTER timing */
-unsigned long long cpuPrimeCount = 0;
-for (bignum i = 0; i <= N; i++) {
-    cpuPrimeCount += (unsigned long long)h_serial[i];
-}
+    double sStart = currentTime();
 
-printf("Serial code executiontime in seconds is %.6f\n", serialTime);
-printf("Total number of primes by CPU in that range is: %llu.\n",
-       cpuPrimeCount);
-
-
-
-    // Mark primes in [0..N]
+    // Mark primes on CPU
     if (N >= 2) h_serial[2] = 1;
-    for (bignum x = 1; x <= N; x += 2) {   // only odds (1,3,5,...)
+    for (bignum x = 1; x <= N; x += 2) {
         h_serial[x] = isPrime(x);
     }
 
-    // Sum AFTER timing
-    for (bignum i = 0; i <= N; i++) cpuPrimeCount += (unsigned long long)h_serial[i];
+    double sEnd = currentTime();
+    double serialTime = sEnd - sStart;
+
+    /* Count AFTER timing */
+    unsigned long long cpuPrimeCount = 0;
+    for (bignum i = 0; i <= N; i++) {
+        cpuPrimeCount += (unsigned long long)h_serial[i];
+    }
 
     printf("Serial code execution time in seconds is %.6f\n", serialTime);
-     printf("Total number of primes by CPU in that range is: %llu.\n",
-                cpuPrimeCount);
+    printf("Total number of primes by CPU in that range is: %llu.\n",
+        cpuPrimeCount);
 
-    // Speedup/efficiency lines (match sample format)
-    const double speedup = serialTime / parallelTime;
-    const double NumProcessorCores = 4.0;
-    const double efficiency = speedup / NumProcessorCores;
+        // Speedup/efficiency lines (match sample format)
+        const double speedup = serialTime / parallelTime;
+        const double NumProcessorCores = 4.0;
+        const double efficiency = speedup / NumProcessorCores;
 
-     printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %.6f\n", speedup);
-     printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %.6f\n", efficiency);
+        printf("%%%%%% The speedup(SerialTimeCost / ParallelTimeCost) when using GPU is %.6f\n", speedup);
+        printf("%%%%%% The efficiency(Speedup / NumProcessorCores) when using GPU is %.6f\n", efficiency);
 
-     free(h_results);
-     free(h_serial);
-    return 0;
-}
+        free(h_results);
+        free(h_serial);
+        return 0;
+    }
