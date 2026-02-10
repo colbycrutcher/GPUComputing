@@ -38,6 +38,8 @@ on GPU, on top of the source file matrix_multiplication.cu.
 
 
 3.  Explore the Makefile, how shall we jointly compile .cu and .c files in a single project? 
+
+- Compiling a project with mixed .cu and .c files involves a two-stage process, compiling source files into individual object files and then linking them together. We need to use the -c flag to generate object files. The Makefile creates object files for mul.o, timing.o, and arrayUtils.o individually. We then use nvcc, a compiler to link all the files together. 
  
 4. Check the APIs Docs and find out what cudaEventRecord() and cudaEventSynchronize() do? 
  
