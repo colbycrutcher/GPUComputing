@@ -72,4 +72,6 @@ Speedup in terms of time cost: 5531.50 x
 7. Can you find some specification data about the peak performance (GFLOPS) for the GPU that we are 
 using in the Lab (NVIDIA RTX 3070) ? Is the GPU device throughput that you observed in step 6 close 
 to their Peak performance? Guess the reason why they are close or why they are far away? 
+
+The NVIDIA RTX 3070 has a "max speed" (peak performance) of about 20,310 GFLOPS. Our result of 5,451.66 GFLOPS is far away from that—we are only using about 26% of the GPU's actual power. The reason it’s so much slower is because our "simple" code makes the GPU wait. Every time the GPU needs a number to multiply, it has to go all the way to the "global memory" (the slow storage), which takes a long time. It’s like a fast chef who has to walk to a separate building every time they need a single egg; the chef is fast, but they spend most of their time walking instead of cooking.
  
