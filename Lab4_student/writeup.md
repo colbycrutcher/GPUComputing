@@ -42,6 +42,12 @@ on GPU, on top of the source file matrix_multiplication.cu.
 - Compiling a project with mixed .cu and .c files involves a two-stage process, compiling source files into individual object files and then linking them together. We need to use the -c flag to generate object files. The Makefile creates object files for mul.o, timing.o, and arrayUtils.o individually. We then use nvcc, a compiler to link all the files together. 
  
 4. Check the APIs Docs and find out what cudaEventRecord() and cudaEventSynchronize() do? 
+
+- Both of these are used to monitor device progress and synchronize the host (CPU) with specific points in a GPU execution stream.
+
+- The cudaEventRecord function "records" an event into a specified CUDA stream.
+
+- The cudaEventSychronize is a blocking call used to wait for an event to complete.
  
 5. In the main function, what is the equation that the program uses to compute the throughput (in unit of 
 GLOPS)? Please interpret the equation. 
