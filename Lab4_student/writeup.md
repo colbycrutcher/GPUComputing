@@ -56,6 +56,18 @@ GLOPS)? Please interpret the equation.
 6. Run your program after you finish your kernel on the dataset 1024.mat and 2048.mat, how much 
 speedups do you obtain compared with CPU time cost? What are the GPU throughput and CPU 
 throughput you observed in these cases? 
+
+Output:
+
+Matrix size:  1024 x 1024 
+Tile size: 16 x 16
+Throughput of simple kernel: 5451.66 GFLOPS
+Throughput of cpu code: 0.99 GFLOPS
+Performance improvement: simple_throughput / cpu_throughput = 5531.50 x
+Speedup in terms of time cost: 5531.50 x
+
+
+-The GPU implementation achieved a speedup of 5531.50 x over the CPU. Throughput for the GPU kernel was 5451.66 GFLOPS. The observed throughput for the sequential CPU code was 0.99 GFLOPS.
  
 7. Can you find some specification data about the peak performance (GFLOPS) for the GPU that we are 
 using in the Lab (NVIDIA RTX 3070) ? Is the GPU device throughput that you observed in step 6 close 
