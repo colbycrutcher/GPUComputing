@@ -51,7 +51,8 @@ on GPU, on top of the source file matrix_multiplication.cu.
  
 5. In the main function, what is the equation that the program uses to compute the throughput (in unit of 
 GLOPS)? Please interpret the equation. 
- 
+
+In main, the equation that the porgram is using to compute throughput is simple_throughput and cpu_throughput. The equation is doing 2 * n^3 then is calculating the time in seconds for cpu and in miliseconds for the simple throughput. Finally dividing by 1000000000 converts it into GFLOPS.
 
 6. Run your program after you finish your kernel on the dataset 1024.mat and 2048.mat, how much 
 speedups do you obtain compared with CPU time cost? What are the GPU throughput and CPU 
