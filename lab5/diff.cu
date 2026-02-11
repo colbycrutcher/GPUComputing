@@ -7,10 +7,14 @@
 // CUDA kernel. Each thread takes care of one element of a 
 __global__ void diffKernel( float *in, float *out, int n )
 {
-    // Wrtie the kernel to implement the diff operation on an array
-    
+    // Wrtie the kernel to implement the diff operation on an array 
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
-}  
+    if (idx >= 0 && idx < n ) {
+        out[idx] = in[idx + 1] - in[idx];
+    }
+
+}
  
 int main( int argc, char* argv[] )
 {
@@ -40,13 +44,15 @@ int main( int argc, char* argv[] )
     cudaMemcpy( d_in, h_in, bytes, cudaMemcpyHostToDevice);
 
     // TODO: setup the blocksize and gridsize and launch the kernel below.
-     
+    
     // Number of threads in each thread block
  
     // Number of thread blocks in grid
+    int gridSize = (n + BLOCKSIZE -1) / BLOCKSIZE;
+    printf("Grid size: %d, Block size: %d\n", gridSize, BLOCKSIZE);
  
     // Execute the kernel
-
+    diffKernel<<<gridSize, BLOCKSIZE>>>(d_in, d_out, n);
  
     // Copy array back to host
     cudaMemcpy( h_out, d_out, bytes - sizeof(float), cudaMemcpyDeviceToHost );
@@ -56,7 +62,7 @@ int main( int argc, char* argv[] )
     for(i = 0; i < n; i ++)
         printf("%4.0f,", h_in[i] );    
     
-    printf("\n\nThe diff     array is: ");
+    printf("\n\nThe diff array is: ");
     for(i = 0; i < n - 1; i++)
         printf("%4.0f,", h_out[i] );    
     puts("");
