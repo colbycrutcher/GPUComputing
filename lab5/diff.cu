@@ -49,7 +49,6 @@ int main( int argc, char* argv[] )
  
     // Number of thread blocks in grid
     int gridSize = (n + BLOCKSIZE -1) / BLOCKSIZE;
-    printf("Grid size: %d, Block size: %d\n", gridSize, BLOCKSIZE);
  
     // Execute the kernel
     diffKernel<<<gridSize, BLOCKSIZE>>>(d_in, d_out, n);
