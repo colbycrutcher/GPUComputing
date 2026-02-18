@@ -17,6 +17,19 @@ __global__ void global_max(int *values, int *max,
                 int *reg_maxes,
                 int num_regions, int n)
 {
+    //My code
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    int region = blockIdx.x;
+
+    if (tid < n && region < num_regions) {
+        atomicMax(&reg_maxes[region], values[tid]);
+    }
+
+    __syncthreads();
+
+    if (threadIdx.x == 0 && region < num_regions) {
+        atomicMax(max, reg_maxes[region]);
+    }
   
 }
 
@@ -25,7 +38,10 @@ __global__ void global_max(int *values, int *max,
 // values, n is the total number of elements in values.
 __global__ void normalize(int *values, int *max, float *output, int n)
 {
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= n) return;
 
+    output[tid] = (float)values[tid] / (float)(*max);
 }   
  
 int main( int argc, char* argv[] )
@@ -59,6 +75,8 @@ int main( int argc, char* argv[] )
     cudaMalloc(&d_gl_max, sizeof(int) );
  
     //PLEASE initialize the values in d_reg_max and d_gl_max to ZERO!!! using cudaMemset()
+        cudaMemset(d_reg_max, 0, num_reg * sizeof(int));
+        cudaMemset(d_gl_max, 0, sizeof(int));
 
 
  
