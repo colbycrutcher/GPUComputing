@@ -75,8 +75,8 @@ int main( int argc, char* argv[] )
     cudaMalloc(&d_gl_max, sizeof(int) );
  
     //PLEASE initialize the values in d_reg_max and d_gl_max to ZERO!!! using cudaMemset()
-        cudaMemset(d_reg_max, 0, num_reg * sizeof(int));
-        cudaMemset(d_gl_max, 0, sizeof(int));
+    cudaMemset(d_reg_max, 0, num_reg * sizeof(int));
+    cudaMemset(d_gl_max, 0, sizeof(int));
 
 
  
