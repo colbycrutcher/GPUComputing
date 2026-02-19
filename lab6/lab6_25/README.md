@@ -2,7 +2,11 @@
 
 ## 1. In this program, how is the global synchronization ( or communication ) achieved ?
 
+After finding the regional maxes uusing atomicMax, __syncthreads() is called to ensure there aren't any race conditions, ensuring all maxes are found before proceeding. Then we look for the max in the regional maxes.
+
 ## 2. Can we combine kernel global_max and kernel normalize into one kernel? What are the difficulties if we try to do that?
+
+
 
 ## 3. How needed data is passed from first kernel into second kernel? Did we reallocate memory for these data or did we make any copy of these data?
 
