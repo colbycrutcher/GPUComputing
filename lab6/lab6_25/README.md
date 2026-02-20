@@ -4,7 +4,7 @@
 
 ### 1. In this program, how is the global synchronization ( or communication ) achieved ?
 
-After finding the regional maxes uusing atomicMax, __syncthreads() is called to ensure there aren't any race conditions, ensuring all maxes are found before proceeding. Then we look for the max in the regional maxes.
+In this program, gloal synchronization is achieved after launching the global_max kernel. The call to cudaDeviceSynchronize() forces the CPU to wait for all threads to finish executing and all the global memory has been updated. The cudaMemcpy also is a synchronizing operation because it has to wait for all prior GPU work to complete before moving data.
 
 ### 2. Can we combine kernel global_max and kernel normalize into one kernel? What are the difficulties if we try to do that?
 
