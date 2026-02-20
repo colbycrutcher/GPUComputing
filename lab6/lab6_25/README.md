@@ -8,7 +8,7 @@ In this program, gloal synchronization is achieved after launching the global_ma
 
 ### 2. Can we combine kernel global_max and kernel normalize into one kernel? What are the difficulties if we try to do that?
 
-
+We can't combine global_max and normalize into a single kernel because the normalized kernel needs the final global max, which is only known after a reduction across all blocks. This is difficult because of enforcing correct global synchronization and visibility of the max before all the threads perform the division.
 
 ### 3. How needed data is passed from first kernel into second kernel? Did we reallocate memory for these data or did we make any copy of these data?
 
