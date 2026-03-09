@@ -1,10 +1,9 @@
+#include <algorithm>
 #include <vector>
 
-
-using namespace std;
 namespace {
 
-void mergeRanges(int* data, int left, int mid, int right, vector<int>& buffer) {
+void mergeRanges(int* data, int left, int mid, int right, std::vector<int>& buffer) {
     int i = left;
     int j = mid + 1;
     int k = left;
@@ -30,24 +29,20 @@ void mergeRanges(int* data, int left, int mid, int right, vector<int>& buffer) {
     }
 }
 
-void mergeSortRecursive(int* data, int left, int right, vector<int>& buffer) {
-    if (left >= right) {
-        return;
-    }
-
-    const int mid = left + (right - left) / 2;
-    mergeSortRecursive(data, left, mid, buffer);
-    mergeSortRecursive(data, mid + 1, right, buffer);
-    mergeRanges(data, left, mid, right, buffer);
 }
-
-}  
 
 void sequentialMergeSort(int* data, int size) {
     if (data == nullptr || size < 2) {
         return;
     }
 
-    vector<int> buffer(size);
-    mergeSortRecursive(data, 0, size - 1, buffer);
+    std::vector<int> buffer(size);
+
+    for (int width = 1; width < size; width *= 2) {
+        for (int left = 0; left < size - width; left += 2 * width) {
+            const int mid = left + width - 1;
+            const int right = std::min(left + 2 * width - 1, size - 1);
+            mergeRanges(data, left, mid, right, buffer);
+        }
+    }
 }
