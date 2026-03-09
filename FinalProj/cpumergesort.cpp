@@ -41,13 +41,13 @@ void mergeSortRecursive(int* data, int left, int right, vector<int>& buffer) {
     mergeRanges(data, left, mid, right, buffer);
 }
 
-}  // namespace
+}  
 
 void sequentialMergeSort(int* data, int size) {
     if (data == nullptr || size < 2) {
         return;
     }
 
-    std::vector<int> buffer(size);
+    vector<int> buffer(size);
     mergeSortRecursive(data, 0, size - 1, buffer);
 }
