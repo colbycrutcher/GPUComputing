@@ -1,8 +1,10 @@
 #include <vector>
 
+
+using namespace std;
 namespace {
 
-void mergeRanges(int* data, int left, int mid, int right, std::vector<int>& buffer) {
+void mergeRanges(int* data, int left, int mid, int right, vector<int>& buffer) {
     int i = left;
     int j = mid + 1;
     int k = left;
@@ -28,7 +30,7 @@ void mergeRanges(int* data, int left, int mid, int right, std::vector<int>& buff
     }
 }
 
-void mergeSortRecursive(int* data, int left, int right, std::vector<int>& buffer) {
+void mergeSortRecursive(int* data, int left, int right, vector<int>& buffer) {
     if (left >= right) {
         return;
     }
