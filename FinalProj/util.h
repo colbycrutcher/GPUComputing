@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iterator>
 
+//shuffles an array prior to sorting
 template<typename T>
 void shuffleArray(T* array, int n)
 {
@@ -14,6 +15,8 @@ void shuffleArray(T* array, int n)
 	std::shuffle(array, array + n, gen);
 }
 
+
+//for printing an array to a stream
 template<typename T>
 void printArrayTo(std::ostream &os, T* array, int n)
 {

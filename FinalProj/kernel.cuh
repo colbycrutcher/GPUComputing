@@ -39,7 +39,7 @@ template<uint sortDir, typename T>
 __device__
 uint binarySearchExclusive(T key, T *keys, uint lo, uint hi)
 {
-	//ascending order:
+
 	while (lo < hi)
 	{
 		uint mid = (lo + hi) >> 1;
@@ -55,7 +55,7 @@ template<uint sortDir, typename T>
  __device__
 uint binarySearchInclusive(T key, T *keys, uint lo, uint hi)
 {
-	//ascending order:
+
 	while (lo < hi)
 	{
 		uint mid = (lo + hi) >> 1;

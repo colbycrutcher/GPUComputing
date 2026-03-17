@@ -18,7 +18,7 @@ void populateArrayWithDummyPreSortedTilesForTestingTheMergeKernel(T *key, uint *
 	    {
 	    	if (i % tileSize == 0) j++;
 	    	int stride = numTiles;
-	    	key[i] = j + (i % tileSize)*stride;// 0 3 6 9 1 4 7 10 ...
+	    	key[i] = (T)(j + (i % tileSize)*stride);// 0 3 6 9 1 4 7 10 ...
 	    	val[i] = static_cast<uint>(i);
 	    }
 
