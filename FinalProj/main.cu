@@ -1,7 +1,7 @@
 // Main CUDA program
 #include <iostream>
 //#include "kernel.cu"
-#include "kernel.h"
+#include "kernel.cuh"
 #include "util.h"
 
 // Follow steps of last lab with in the main
