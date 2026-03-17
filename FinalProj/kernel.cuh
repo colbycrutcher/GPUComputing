@@ -8,7 +8,7 @@
 
 template<uint sortDir, typename T> __device__ uint binarySearchExclusive(uint val, uint *data, uint lo, uint hi)
 {
-	//ascending order:
+	//
 	while (lo < hi)
 	{
 		uint mid = (lo + hi) >> 1;
@@ -22,7 +22,7 @@ template<uint sortDir, typename T> __device__ uint binarySearchExclusive(uint va
 
 template<uint sortDir, typename T> __device__ uint binarySearchInclusive(uint val, uint *data, uint lo, uint hi)
 {
-	//ascending order:
+
 	while (lo < hi)
 	{
 		uint mid = (lo + hi) >> 1;
