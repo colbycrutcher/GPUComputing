@@ -1,5 +1,7 @@
 # Colby Crutcher, Ben Foster, Riley Rudolfo
 
+Demo Video:
+
 
 # CUDA Merge Sort
 
@@ -28,6 +30,8 @@ Example (testing ~1 million elements):
 
 
 * Note - the total array size (N) must be evenly divisible by the number of blocks (numBlocks).
+ 
+ I did this so that we don't have padding, and to avoid out of bounds queries.
 
 
 After that, you will see the results printed to sort_comparison.txt

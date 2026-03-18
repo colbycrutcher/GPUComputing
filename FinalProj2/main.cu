@@ -56,8 +56,18 @@ int main(int argc, char* argv[]) {
     // --- Generate completely random, unsorted data ---
     srand(42); // Seed for reproducibility during testing
     for (int i = 0; i < N; i++) {
-        h_key[i] = static_cast<float>(rand() % 1000); // Random numbers between 0 and 999
+        h_key[i] = static_cast<float>(rand() % 1000); 
         h_val[i] = static_cast<uint>(i);
+    }
+
+    // --- WRITE UNSORTED RESULTS TO FILE ---
+    std::ofstream unsortedFile("unsorted.txt");
+    if (unsortedFile.is_open()) {
+        for (int i = 0; i < N; i++) {
+            unsortedFile << h_key[i] << "\n";
+        }
+        unsortedFile.close();
+        std::cout << "Saved unsorted array to unsorted.txt\n";
     }
 
     // --- CPU SORT TIMING ---
@@ -68,6 +78,16 @@ int main(int argc, char* argv[]) {
     sequentialMergeSort(h_key_cpu, N);
     auto end_cpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> cpu_ms = end_cpu - start_cpu;
+
+    // --- WRITE CPU RESULTS TO FILE ---
+    std::ofstream cpuFile("cpu_sorted.txt");
+    if (cpuFile.is_open()) {
+        for (int i = 0; i < N; i++) {
+            cpuFile << h_key_cpu[i] << "\n";
+        }
+        cpuFile.close();
+        std::cout << "Saved CPU sorted array to cpu_sorted.txt\n";
+    }
 
     // --- GPU MEMORY SETUP ---
     float *d_dkey, *d_skey;
@@ -82,9 +102,6 @@ int main(int argc, char* argv[]) {
     cudaMemcpy(d_skey, h_key, sizeof(float)*N, cudaMemcpyHostToDevice);
     cudaMemcpy(d_sval, h_val, sizeof(uint)*N, cudaMemcpyHostToDevice);
 
-    std::cout << "\nCompletely Unsorted keys (first 16):\n";
-    printArrayTo<float>(std::cout, h_key, std::min(N, 16));
-
     // --- GPU SORT TIMING ---
     cudaEvent_t start_gpu, stop_gpu;
     cudaEventCreate(&start_gpu);
@@ -93,8 +110,6 @@ int main(int argc, char* argv[]) {
     cudaEventRecord(start_gpu);
 
     // --- Step 2: Sort the initial tiles in parallel! ---
-    // We sort the data in-place inside d_skey using the odd-even kernel
-    // Notice we use <1U> instead of <1U, float> to let the compiler deduce the type
     sortTilesOddEvenKernel<1U><<<numBlocks, blockSize>>>(d_skey, d_sval, N, blockSize);
 
     // --- Step 3: Merge the sorted tiles ---
@@ -102,8 +117,6 @@ int main(int argc, char* argv[]) {
 
     while (tileSize < N)
     {
-        // Merge from d_skey into d_dkey
-        // Notice we use <1U> here as well
         mergeSortedTilesKernel<1U><<<numBlocks, blockSize>>>(d_dkey, d_dval, d_skey, d_sval, N, tileSize);
 
         // Ping pong: Swap pointers so the output of this run becomes the input for the next
@@ -119,14 +132,21 @@ int main(int argc, char* argv[]) {
     float gpu_ms = 0;
     cudaEventElapsedTime(&gpu_ms, start_gpu, stop_gpu);
 
-    // Because of the pointer swap at the end of the loop, the final sorted data is always in d_skey
+    // Copy final sorted data back to host
     cudaMemcpy(h_key, d_skey, sizeof(float)*N, cudaMemcpyDeviceToHost);
     cudaMemcpy(h_val, d_sval, sizeof(uint)*N, cudaMemcpyDeviceToHost);
 
-    std::cout << "\nFully Sorted keys (first 16):\n";
-    printArrayTo<float>(std::cout, h_key, std::min(N, 16)); 
+    // --- WRITE GPU RESULTS TO FILE ---
+    std::ofstream gpuFile("gpu_sorted.txt");
+    if (gpuFile.is_open()) {
+        for (int i = 0; i < N; i++) {
+            gpuFile << h_key[i] << "\n";
+        }
+        gpuFile.close();
+        std::cout << "Saved GPU sorted array to gpu_sorted.txt\n";
+    }
 
-    // --- WRITE TO FILE ---
+    // --- WRITE BENCHMARK TIMING TO FILE ---
     std::ofstream outfile("sort_comparison.txt", std::ios_base::app);
     if (outfile.is_open()) {
         outfile << "Array Size (N): " << N << " | Block Size: " << blockSize << "\n";
@@ -135,7 +155,7 @@ int main(int argc, char* argv[]) {
         outfile << "Speedup: " << cpu_ms.count() / gpu_ms << "x\n";
         outfile << "--------------------------------------------------\n";
         outfile.close();
-        std::cout << "\nSuccessfully appended timing results to sort_comparison.txt\n";
+        std::cout << "Appended timing results to sort_comparison.txt\n";
     }
 
     // Clean up

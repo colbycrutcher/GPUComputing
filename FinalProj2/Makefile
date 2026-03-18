@@ -6,3 +6,6 @@ mergesort: main.cu kernel.cu cpumergesort.cpp
 clean:
 	rm -f mergesort
 	rm -r sort_comparison.txt
+	rm -r gpu_sorted.txt
+	rm -r cpu_sorted.txt
+	rm -r unsorted.txt
