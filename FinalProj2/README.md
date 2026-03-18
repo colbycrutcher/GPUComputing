@@ -2,10 +2,12 @@
 
 Demo Video:
 
+* In the video the executable is called mergesort, but has since changed it to 'project' per the rubric.
+* The bash file is also different, as we now test different block sizes
+
 https://youtu.be/3UuTGXjHtrQ
 
-* In the video the executable is called mergesort, but I changed it to 'project' per the rubric.
-* The bash file is also different, as we now test different block sizes
+
 
 
 # CUDA Merge Sort
