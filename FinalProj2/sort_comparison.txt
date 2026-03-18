@@ -1,0 +1,40 @@
+Array Size (N): 1024 | Block Size: 256
+CPU Sequential Merge Sort Time: 0.010645 ms
+GPU Parallel Merge Sort Time: 0.016288 ms
+Speedup: 0.653549x
+--------------------------------------------------
+Array Size (N): 4096 | Block Size: 256
+CPU Sequential Merge Sort Time: 0.049005 ms
+GPU Parallel Merge Sort Time: 0.02336 ms
+Speedup: 2.09782x
+--------------------------------------------------
+Array Size (N): 16384 | Block Size: 256
+CPU Sequential Merge Sort Time: 0.209391 ms
+GPU Parallel Merge Sort Time: 0.030752 ms
+Speedup: 6.80902x
+--------------------------------------------------
+Array Size (N): 65536 | Block Size: 256
+CPU Sequential Merge Sort Time: 0.894079 ms
+GPU Parallel Merge Sort Time: 0.046816 ms
+Speedup: 19.0977x
+--------------------------------------------------
+Array Size (N): 262144 | Block Size: 256
+CPU Sequential Merge Sort Time: 4.15601 ms
+GPU Parallel Merge Sort Time: 0.129216 ms
+Speedup: 32.1633x
+--------------------------------------------------
+Array Size (N): 1048576 | Block Size: 256
+CPU Sequential Merge Sort Time: 16.6174 ms
+GPU Parallel Merge Sort Time: 0.730976 ms
+Speedup: 22.7332x
+--------------------------------------------------
+Array Size (N): 4194304 | Block Size: 256
+CPU Sequential Merge Sort Time: 72.6035 ms
+GPU Parallel Merge Sort Time: 3.39174 ms
+Speedup: 21.406x
+--------------------------------------------------
+Array Size (N): 16777216 | Block Size: 256
+CPU Sequential Merge Sort Time: 319.538 ms
+GPU Parallel Merge Sort Time: 16.1191 ms
+Speedup: 19.8236x
+--------------------------------------------------
