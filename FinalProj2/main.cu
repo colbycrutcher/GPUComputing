@@ -8,7 +8,7 @@
 #include "kernel.cuh"
 #include "util.h"
 
-// Forward declaration for CPU sort
+//declaration for CPU sort
 void sequentialMergeSort(float* data, int size);
 
 int main(int argc, char* argv[]) {
@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     int N = 1 << 10;       // Default size: 1024
     int blockSize = 256;   // Default block size: 256
 
-    // Parse command line arguments
+    // parse command line arguments
     if (argc > 1) {
         if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help") {
             std::cout << "Usage: ./mergesort [ArraySize] [BlockSize]\n";
@@ -53,14 +53,14 @@ int main(int argc, char* argv[]) {
     float *h_key = new float[N];
     uint *h_val = new uint[N];
 
-    // --- Generate completely random, unsorted data ---
+    //Generate random data 
     srand(42); // Seed for reproducibility during testing
     for (int i = 0; i < N; i++) {
         h_key[i] = static_cast<float>(rand() % 1000); 
         h_val[i] = static_cast<uint>(i);
     }
 
-    // --- WRITE UNSORTED RESULTS TO FILE ---
+    // write the unsorted file
     std::ofstream unsortedFile("unsorted.txt");
     if (unsortedFile.is_open()) {
         for (int i = 0; i < N; i++) {
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Saved CPU sorted array to cpu_sorted.txt\n";
     }
 
-    // --- GPU MEMORY SETUP ---
+    // gpu memory
     float *d_dkey, *d_skey;
     uint *d_dval, *d_sval;
 
@@ -98,28 +98,28 @@ int main(int argc, char* argv[]) {
     cudaMalloc(&d_dval, sizeof(uint) * N);
     cudaMalloc(&d_sval, sizeof(uint) * N);
 
-    // Copy initial random data into d_skey to start
+    // copy initial random data into d_skey to start
     cudaMemcpy(d_skey, h_key, sizeof(float)*N, cudaMemcpyHostToDevice);
     cudaMemcpy(d_sval, h_val, sizeof(uint)*N, cudaMemcpyHostToDevice);
 
-    // --- GPU SORT TIMING ---
+    // gpu timer
     cudaEvent_t start_gpu, stop_gpu;
     cudaEventCreate(&start_gpu);
     cudaEventCreate(&stop_gpu);
 
     cudaEventRecord(start_gpu);
 
-    // --- Step 2: Sort the initial tiles in parallel! ---
+    //  the initial tiles in parallel
     sortTilesOddEvenKernel<1U><<<numBlocks, blockSize>>>(d_skey, d_sval, N, blockSize);
 
-    // --- Step 3: Merge the sorted tiles ---
+    // merge the tiles
     int tileSize = blockSize;
 
     while (tileSize < N)
     {
         mergeSortedTilesKernel<1U><<<numBlocks, blockSize>>>(d_dkey, d_dval, d_skey, d_sval, N, tileSize);
 
-        // Ping pong: Swap pointers so the output of this run becomes the input for the next
+        // swap pointers so the output of this run becomes the input for the next
         uint *tempVal = d_dval; d_dval = d_sval; d_sval = tempVal;
         float *tempKey = d_skey; d_skey = d_dkey; d_dkey = tempKey;
 
@@ -132,11 +132,11 @@ int main(int argc, char* argv[]) {
     float gpu_ms = 0;
     cudaEventElapsedTime(&gpu_ms, start_gpu, stop_gpu);
 
-    // Copy final sorted data back to host
+    // copy final sorted data back to host
     cudaMemcpy(h_key, d_skey, sizeof(float)*N, cudaMemcpyDeviceToHost);
     cudaMemcpy(h_val, d_sval, sizeof(uint)*N, cudaMemcpyDeviceToHost);
 
-    // --- WRITE GPU RESULTS TO FILE ---
+    // write to gpu sorted file
     std::ofstream gpuFile("gpu_sorted.txt");
     if (gpuFile.is_open()) {
         for (int i = 0; i < N; i++) {
@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Saved GPU sorted array to gpu_sorted.txt\n";
     }
 
-    // --- WRITE BENCHMARK TIMING TO FILE ---
+    // write timing
     std::ofstream outfile("sort_comparison.txt", std::ios_base::app);
     if (outfile.is_open()) {
         outfile << "Array Size (N): " << N << " | Block Size: " << blockSize << "\n";
@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Appended timing results to sort_comparison.txt\n";
     }
 
-    // Clean up
+    // clean up
     cudaEventDestroy(start_gpu);
     cudaEventDestroy(stop_gpu);
     cudaFree(d_dkey);

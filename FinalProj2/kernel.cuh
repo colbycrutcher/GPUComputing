@@ -3,9 +3,9 @@
 
 typedef unsigned int uint;
 
-// ==========================================
-// BINARY SEARCH HELPER FUNCTIONS
-// ==========================================
+
+// helper functions for binary search
+
 
 template<uint sortDir, typename T> 
 __device__ uint binarySearchExclusive(T val, T *data, uint lo, uint hi)
@@ -33,9 +33,7 @@ __device__ uint binarySearchInclusive(T val, T *data, uint lo, uint hi)
     return lo;
 }
 
-// ==========================================
-// STEP 2: ODD-EVEN TILE SORT KERNEL
-// ==========================================
+//tile sort kernel even odd
 
 template<uint sortDir, typename T>
 __global__ void sortTilesOddEvenKernel(T *dkey, uint *dval, int N, int tileSize) {
@@ -79,9 +77,7 @@ __global__ void sortTilesOddEvenKernel(T *dkey, uint *dval, int N, int tileSize)
     }
 }
 
-// ==========================================
-// STEP 3: BINARY SEARCH MERGE KERNEL
-// ==========================================
+// binary search merge kernel
 
 template<uint sortDir, typename T>
 __global__ void mergeSortedTilesKernel(T *dkey, uint *dval, T* skey, uint *sval, int N, int tileSize)
@@ -119,4 +115,4 @@ __global__ void mergeSortedTilesKernel(T *dkey, uint *dval, T* skey, uint *sval,
     dval[outIdx] = value;
 }
 
-#endif //FINALPROJ_GPUMERGESORT_H
+#endif 

@@ -2,6 +2,8 @@
 
 Demo Video:
 
+https://youtu.be/3UuTGXjHtrQ
+
 
 # CUDA Merge Sort
 
