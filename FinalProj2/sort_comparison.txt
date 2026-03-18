@@ -1,5 +1,0 @@
-Array Size (N): 1024 | Block Size: 256
-CPU Sequential Merge Sort Time: 0.041788 ms
-GPU Parallel Merge Sort Time: 0.048832 ms
-Speedup: 0.85575x
---------------------------------------------------
