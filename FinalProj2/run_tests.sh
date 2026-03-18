@@ -19,7 +19,7 @@ echo "--------------------------------------------------"
 BLOCK_SIZE=256
 
 # Define an array of N values to test (powers of 4 to scale up quickly)
-# Note: These must be multiples of the block size!
+# Note: these must be multiples of the block size
 SIZES=(1024 4096 16384 65536 262144 1048576 4194304 16777216)
 
 # Clear the output file so we start fresh

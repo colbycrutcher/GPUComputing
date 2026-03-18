@@ -1,40 +1,40 @@
 Array Size (N): 1024 | Block Size: 256
-CPU Sequential Merge Sort Time: 0.020789 ms
-GPU Parallel Merge Sort Time: 0.017408 ms
-Speedup: 1.19422x
+CPU Sequential Merge Sort Time: 0.066948 ms
+GPU Parallel Merge Sort Time: 0.045952 ms
+Speedup: 1.45691x
 --------------------------------------------------
 Array Size (N): 4096 | Block Size: 256
-CPU Sequential Merge Sort Time: 0.05021 ms
-GPU Parallel Merge Sort Time: 0.023456 ms
-Speedup: 2.1406x
+CPU Sequential Merge Sort Time: 0.433683 ms
+GPU Parallel Merge Sort Time: 0.052224 ms
+Speedup: 8.30429x
 --------------------------------------------------
 Array Size (N): 16384 | Block Size: 256
-CPU Sequential Merge Sort Time: 0.213759 ms
-GPU Parallel Merge Sort Time: 0.03072 ms
-Speedup: 6.9583x
+CPU Sequential Merge Sort Time: 1.0448 ms
+GPU Parallel Merge Sort Time: 0.0768 ms
+Speedup: 13.6041x
 --------------------------------------------------
 Array Size (N): 65536 | Block Size: 256
-CPU Sequential Merge Sort Time: 0.881632 ms
-GPU Parallel Merge Sort Time: 0.046784 ms
-Speedup: 18.8447x
+CPU Sequential Merge Sort Time: 3.63819 ms
+GPU Parallel Merge Sort Time: 0.172256 ms
+Speedup: 21.1208x
 --------------------------------------------------
 Array Size (N): 262144 | Block Size: 256
-CPU Sequential Merge Sort Time: 4.11393 ms
-GPU Parallel Merge Sort Time: 0.130176 ms
-Speedup: 31.6029x
+CPU Sequential Merge Sort Time: 14.8434 ms
+GPU Parallel Merge Sort Time: 0.593952 ms
+Speedup: 24.991x
 --------------------------------------------------
 Array Size (N): 1048576 | Block Size: 256
-CPU Sequential Merge Sort Time: 25.5507 ms
-GPU Parallel Merge Sort Time: 0.728544 ms
-Speedup: 35.0709x
+CPU Sequential Merge Sort Time: 59.6928 ms
+GPU Parallel Merge Sort Time: 2.49837 ms
+Speedup: 23.8927x
 --------------------------------------------------
 Array Size (N): 4194304 | Block Size: 256
-CPU Sequential Merge Sort Time: 71.7931 ms
-GPU Parallel Merge Sort Time: 3.38582 ms
-Speedup: 21.204x
+CPU Sequential Merge Sort Time: 235.089 ms
+GPU Parallel Merge Sort Time: 10.3385 ms
+Speedup: 22.7392x
 --------------------------------------------------
 Array Size (N): 16777216 | Block Size: 256
-CPU Sequential Merge Sort Time: 317.825 ms
-GPU Parallel Merge Sort Time: 16.1324 ms
-Speedup: 19.701x
+CPU Sequential Merge Sort Time: 966.78 ms
+GPU Parallel Merge Sort Time: 43.8844 ms
+Speedup: 22.0302x
 --------------------------------------------------

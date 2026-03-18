@@ -4,35 +4,12 @@
 #include <chrono>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 #include "kernel.cuh"
 #include "util.h"
 
 // Forward declaration for CPU sort
 void sequentialMergeSort(float* data, int size);
-
-template<uint sortDir, typename T>
-void populateArrayWithDummyPreSortedTilesForTestingTheMergeKernel(T *key, uint *val, int tileSize, int numTiles, int N)
-{
-    if (sortDir == 1)
-        for ( int i = 0, j = 0; i < N; i++)
-        {
-            if (i % tileSize == 0) j++;
-            int stride = numTiles;
-            key[i] = j + (i % tileSize)*stride;
-            val[i] = static_cast<uint>(i);
-        }
-    else
-        for (int i = 0, j = 0; i < N; i++)
-        {
-            if (i % tileSize == 0) j++;
-            int stride = numTiles;
-            int localIdx = i % tileSize;
-            int reversedIdx = tileSize - 1 - localIdx;
-
-            key[i] = j + reversedIdx * stride;
-            val[i] = static_cast<uint>(i);
-        }
-}
 
 int main(int argc, char* argv[]) {
     // Default values
@@ -69,15 +46,19 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::cout << "Running Merge Sort with N = " << N << ", Block Size = " << blockSize << "\n";
+    std::cout << "Running FULL Merge Sort with N = " << N << ", Block Size = " << blockSize << "\n";
     std::cout << "------------------------------------------------------\n";
 
     // Allocate host memory
     float *h_key = new float[N];
     uint *h_val = new uint[N];
 
-    // Populate the array with dummy pre-sorted tiles
-    populateArrayWithDummyPreSortedTilesForTestingTheMergeKernel<1U, float>(h_key, h_val, blockSize, numBlocks, N);
+    // --- Generate completely random, unsorted data ---
+    srand(42); // Seed for reproducibility during testing
+    for (int i = 0; i < N; i++) {
+        h_key[i] = static_cast<float>(rand() % 1000); // Random numbers between 0 and 999
+        h_val[i] = static_cast<uint>(i);
+    }
 
     // --- CPU SORT TIMING ---
     float* h_key_cpu = new float[N];
@@ -97,10 +78,11 @@ int main(int argc, char* argv[]) {
     cudaMalloc(&d_dval, sizeof(uint) * N);
     cudaMalloc(&d_sval, sizeof(uint) * N);
 
+    // Copy initial random data into d_skey to start
     cudaMemcpy(d_skey, h_key, sizeof(float)*N, cudaMemcpyHostToDevice);
     cudaMemcpy(d_sval, h_val, sizeof(uint)*N, cudaMemcpyHostToDevice);
 
-    std::cout << "\nUnsorted keys (first 16):\n";
+    std::cout << "\nCompletely Unsorted keys (first 16):\n";
     printArrayTo<float>(std::cout, h_key, std::min(N, 16));
 
     // --- GPU SORT TIMING ---
@@ -110,13 +92,21 @@ int main(int argc, char* argv[]) {
 
     cudaEventRecord(start_gpu);
 
+    // --- Step 2: Sort the initial tiles in parallel! ---
+    // We sort the data in-place inside d_skey using the odd-even kernel
+    // Notice we use <1U> instead of <1U, float> to let the compiler deduce the type
+    sortTilesOddEvenKernel<1U><<<numBlocks, blockSize>>>(d_skey, d_sval, N, blockSize);
+
+    // --- Step 3: Merge the sorted tiles ---
     int tileSize = blockSize;
 
-    for (int l = 0 ; tileSize <= N; l++)
+    while (tileSize < N)
     {
+        // Merge from d_skey into d_dkey
+        // Notice we use <1U> here as well
         mergeSortedTilesKernel<1U><<<numBlocks, blockSize>>>(d_dkey, d_dval, d_skey, d_sval, N, tileSize);
 
-        // Ping ponging between dest and source arrays
+        // Ping pong: Swap pointers so the output of this run becomes the input for the next
         uint *tempVal = d_dval; d_dval = d_sval; d_sval = tempVal;
         float *tempKey = d_skey; d_skey = d_dkey; d_dkey = tempKey;
 
@@ -129,15 +119,14 @@ int main(int argc, char* argv[]) {
     float gpu_ms = 0;
     cudaEventElapsedTime(&gpu_ms, start_gpu, stop_gpu);
 
-    // Copy result back to host (Because of the ping-pong swap at the end of the loop, the final sorted data is in d_skey)
+    // Because of the pointer swap at the end of the loop, the final sorted data is always in d_skey
     cudaMemcpy(h_key, d_skey, sizeof(float)*N, cudaMemcpyDeviceToHost);
     cudaMemcpy(h_val, d_sval, sizeof(uint)*N, cudaMemcpyDeviceToHost);
 
-    std::cout << "\nSorted keys (first 16):\n";
+    std::cout << "\nFully Sorted keys (first 16):\n";
     printArrayTo<float>(std::cout, h_key, std::min(N, 16)); 
 
     // --- WRITE TO FILE ---
-    // Using append mode so multiple test runs don't overwrite each other
     std::ofstream outfile("sort_comparison.txt", std::ios_base::app);
     if (outfile.is_open()) {
         outfile << "Array Size (N): " << N << " | Block Size: " << blockSize << "\n";
